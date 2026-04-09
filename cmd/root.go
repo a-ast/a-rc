@@ -37,8 +37,10 @@ func NewRootCmd(services *Services) *cobra.Command {
 		},
 	}
 
-	home, _ := os.UserHomeDir()
-	defaultConfig := filepath.Join(home, ".config", "a-rc", "config.yaml")
+	defaultConfig := ""
+	if home, err := os.UserHomeDir(); err == nil {
+		defaultConfig = filepath.Join(home, ".config", "a-rc", "config.yaml")
+	}
 	root.PersistentFlags().StringVar(&ConfigPath, "config", defaultConfig, "config file path")
 
 	root.AddCommand(
