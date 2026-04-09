@@ -9,7 +9,7 @@ import (
 	"github.com/getlantern/systray"
 )
 
-//go:embed icon.png
+//go:embed bow.png
 var iconPNG []byte
 
 // TrayApp implements a macOS menu bar tray app.
