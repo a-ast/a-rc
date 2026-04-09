@@ -1,0 +1,15 @@
+# binary
+a-rc
+
+# Go
+*.test
+*.out
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+
+# credentials — never commit
+gdrive-service-account.json
