@@ -9,21 +9,12 @@ import (
 func newListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
-		Short: "List configured jobs and daemon status",
+		Short: "List configured jobs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := svc.Config.Load(ConfigPath)
 			if err != nil {
 				return err
 			}
-
-			running, pid, _ := svc.Schedule.Status()
-			status := "stopped"
-			if running && pid > 0 {
-				status = fmt.Sprintf("running (pid %d)", pid)
-			} else if running {
-				status = "registered (not running)"
-			}
-			fmt.Printf("daemon: %s\n\n", status)
 
 			if len(cfg.Jobs) == 0 {
 				fmt.Println("no jobs configured")

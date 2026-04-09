@@ -13,19 +13,11 @@ type Archiver interface {
 }
 
 // Uploader transfers a local archive file to the configured GDrive folder.
-// The destination folder is resolved by the adapter from environment variables.
 type Uploader interface {
 	Upload(localPath string) error
 }
 
-// ProcessManager manages the lifecycle of the background daemon process via the OS scheduler.
-type ProcessManager interface {
-	Install(binaryPath, configPath, logDir string) error
-	Uninstall() error
-	Status() (running bool, pid int, err error)
-}
-
-// JobScheduler runs jobs on their configured cron schedules inside the daemon process.
+// JobScheduler runs jobs on their configured cron schedules.
 type JobScheduler interface {
 	Start(jobs []Job, runner func(Job) error) error
 	Stop()

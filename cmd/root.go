@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"a-rc/internal/adapters/tray"
 	"a-rc/internal/core"
 	"github.com/spf13/cobra"
 )
@@ -14,10 +15,9 @@ var ConfigPath string
 
 // Services is the container passed from main to all subcommands.
 type Services struct {
-	Archive  *core.ArchiveService
-	Schedule *core.ScheduleService
-	Daemon   *core.DaemonService
-	Config   core.ConfigRepository
+	Archive *core.ArchiveService
+	Config  core.ConfigRepository
+	Tray    *tray.TrayApp
 }
 
 var svc *Services
@@ -27,7 +27,11 @@ func NewRootCmd(services *Services) *cobra.Command {
 
 	root := &cobra.Command{
 		Use:   "a-rc",
-		Short: "A command line archiver",
+		Short: "A macOS archiver with menu bar control",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			svc.Tray.Run()
+			return nil
+		},
 	}
 
 	home, _ := os.UserHomeDir()
@@ -35,9 +39,6 @@ func NewRootCmd(services *Services) *cobra.Command {
 	root.PersistentFlags().StringVar(&ConfigPath, "config", defaultConfig, "config file path")
 
 	root.AddCommand(
-		newScheduleCmd(),
-		newUnscheduleCmd(),
-		newDaemonCmd(),
 		newRunCmd(),
 		newListCmd(),
 	)
