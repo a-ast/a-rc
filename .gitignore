@@ -13,3 +13,6 @@ a-rc
 
 # credentials — never commit
 gdrive-service-account.json
+
+# local Claude Code settings
+.claude/settings.local.json
