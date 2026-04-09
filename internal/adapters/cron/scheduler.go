@@ -5,20 +5,21 @@ import (
 	"sync"
 
 	"a-rc/internal/core"
+
 	robfigcron "github.com/robfig/cron/v3"
 )
 
-// Adapter implements core.JobScheduler using robfig/cron.
-type Adapter struct {
+// Scheduler implements core.JobScheduler using robfig/cron.
+type Scheduler struct {
 	mu   sync.Mutex
 	cron *robfigcron.Cron
 }
 
-func New() *Adapter {
-	return &Adapter{}
+func New() *Scheduler {
+	return &Scheduler{}
 }
 
-func (a *Adapter) Start(jobs []core.Job, runner func(core.Job) error) error {
+func (a *Scheduler) Start(jobs []core.Job, runner func(core.Job) error) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
@@ -36,7 +37,7 @@ func (a *Adapter) Start(jobs []core.Job, runner func(core.Job) error) error {
 	return nil
 }
 
-func (a *Adapter) Stop() {
+func (a *Scheduler) Stop() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if a.cron != nil {
@@ -45,7 +46,7 @@ func (a *Adapter) Stop() {
 	}
 }
 
-func (a *Adapter) Reload(jobs []core.Job, runner func(core.Job) error) error {
+func (a *Scheduler) Reload(jobs []core.Job, runner func(core.Job) error) error {
 	a.Stop()
 	return a.Start(jobs, runner)
 }

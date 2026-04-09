@@ -9,24 +9,25 @@ import (
 	"path/filepath"
 
 	"a-rc/internal/core"
+
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/drive/v3"
 	"google.golang.org/api/option"
 )
 
-// Adapter implements core.Uploader using the Google Drive API with OAuth2.
+// Drive implements core.Uploader using the Google Drive API with OAuth2.
 // On first use it opens a browser for authorization and caches the token in token_file.
-type Adapter struct {
+type Drive struct {
 	configRepo core.ConfigRepository
 	configPath *string
 }
 
-func New(repo core.ConfigRepository, configPath *string) *Adapter {
-	return &Adapter{configRepo: repo, configPath: configPath}
+func New(repo core.ConfigRepository, configPath *string) *Drive {
+	return &Drive{configRepo: repo, configPath: configPath}
 }
 
-func (a *Adapter) Upload(localPath string) error {
+func (a *Drive) Upload(localPath string) error {
 	cfg, err := a.configRepo.Load(*a.configPath)
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
