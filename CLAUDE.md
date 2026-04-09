@@ -58,7 +58,8 @@ gdrive:
   folder: Backups
 
 jobs:
-  - path: ~/Documents
+  Documents:
+    path: ~/Documents
     schedule: "0 2 * * *"   # 5-field cron expression
 ```
 
