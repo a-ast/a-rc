@@ -33,19 +33,32 @@ Add a `gdrive` section to `config.yaml`:
 
 ```yaml
 gdrive:
-  service_account_file: ~/.config/a-rc/gdrive-service-account.json
-  folder: Backups   # Drive folder name or ID shared with the service account
+  credentials_file: ~/.config/a-rc/gdrive-credentials.json
+  token_file: ~/.config/a-rc/gdrive-token.json
+  folder: Backups
 ```
 
-#### Setting up a service account
+#### Getting credentials
 
 1. Go to [console.cloud.google.com](https://console.cloud.google.com) and create a new project (e.g. `a-rc`).
 2. Enable the **Google Drive API**: APIs & Services - Enable APIs - search "Google Drive API".
-3. Create a service account: IAM & Admin - Service Accounts - Create. No special roles needed.
-4. Generate a key: open the service account - Keys - Add Key - JSON. Save the downloaded file as your `service_account_file` path.
-5. In Google Drive, create a folder (e.g. `Backups`) and share it with the service account email (e.g. `a-rc@your-project.iam.gserviceaccount.com`) as **Editor**.
+3. Create credentials: APIs & Services - Credentials - Create Credentials - **OAuth client ID** - Application type: **Desktop app**. Download the JSON and save it as `credentials_file`.
+4. Configure the consent screen: OAuth consent screen - External - add your Google account as a test user.
 
-No browser login or token refresh - the service account key file is the only credential needed.
+#### First run
+
+`token_file` is created automatically — you do not need to obtain it manually.
+
+On the first upload, a-rc opens a browser for authorization:
+
+```bash
+a-rc run ~/some/path
+# Browser opens → click Allow → paste the authorization code into the terminal
+```
+
+a-rc exchanges the code for a token and saves it to `token_file`. Every subsequent run uses that file silently and refreshes it automatically when it expires.
+
+The only file you need to obtain manually is `credentials_file`.
 
 ## Usage
 
@@ -92,4 +105,4 @@ Logs are written to `log_dir` as defined in `config.yaml`:
 
 - The plist hardcodes the binary path at `a-rc schedule` time. If you move or rebuild the binary to a different
   location, re-run `a-rc schedule`.
-- Google Drive upload is not yet implemented (Phase 2).
+- The plist hardcodes the binary path at `a-rc schedule` time. If you move or rebuild the binary to a different location, re-run `a-rc schedule`.

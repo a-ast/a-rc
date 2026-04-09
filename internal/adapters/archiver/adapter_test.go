@@ -27,10 +27,11 @@ func TestArchive_CreatesZip(t *testing.T) {
 		t.Fatalf("zip file not found: %v", err)
 	}
 
-	// zip name must start with the source folder's base name
+	// zip name must be exactly {folder}.zip
 	base := filepath.Base(src)
-	if !strings.HasPrefix(filepath.Base(zipPath), base) {
-		t.Errorf("zip name %q does not start with %q", filepath.Base(zipPath), base)
+	wantName := base + ".zip"
+	if filepath.Base(zipPath) != wantName {
+		t.Errorf("zip name %q, want %q", filepath.Base(zipPath), wantName)
 	}
 
 	entries := zipEntries(t, zipPath)

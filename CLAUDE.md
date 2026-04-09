@@ -59,17 +59,18 @@ jobs:
     schedule: "0 2 * * *"   # 5-field cron expression
 ```
 
-## Google Drive (Phase 2)
+## Google Drive
 
 Configured in `config.yaml` under the `gdrive` key:
 
 ```yaml
 gdrive:
-  service_account_file: ~/.config/a-rc/gdrive-service-account.json
+  credentials_file: ~/.config/a-rc/gdrive-credentials.json
+  token_file: ~/.config/a-rc/gdrive-token.json
   folder: Backups
 ```
 
-The `gdrive.Adapter` holds a pointer to `cmd.ConfigPath` and loads the config at upload time, so it always reflects the current `--config` flag value.
+Uses OAuth2 (Desktop app flow). On first upload the browser opens for authorization; the token is saved to `token_file` and refreshed automatically. The `gdrive.Adapter` holds a pointer to `cmd.ConfigPath` and loads the config at upload time.
 
 ## Scheduling design
 

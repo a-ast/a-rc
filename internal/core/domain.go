@@ -9,8 +9,9 @@ type Config struct {
 
 // GDriveConfig holds Google Drive settings.
 type GDriveConfig struct {
-	ServiceAccountFile string `yaml:"service_account_file"`
-	Folder             string `yaml:"folder"`
+	CredentialsFile string `yaml:"credentials_file"` // OAuth2 client secret JSON from Google Console
+	TokenFile       string `yaml:"token_file"`       // cached OAuth2 token (written on first auth)
+	Folder          string `yaml:"folder"`
 }
 
 // Job describes a single archive task.

@@ -44,7 +44,8 @@ func expandTilde(cfg *core.Config) {
 		return p
 	}
 	cfg.LogDir = expand(cfg.LogDir)
-	cfg.GDrive.ServiceAccountFile = expand(cfg.GDrive.ServiceAccountFile)
+	cfg.GDrive.CredentialsFile = expand(cfg.GDrive.CredentialsFile)
+	cfg.GDrive.TokenFile = expand(cfg.GDrive.TokenFile)
 	for i := range cfg.Jobs {
 		cfg.Jobs[i].Path = expand(cfg.Jobs[i].Path)
 	}

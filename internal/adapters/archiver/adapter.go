@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"time"
 
 	"a-rc/internal/core"
 )
@@ -33,7 +32,7 @@ func (a *Adapter) Archive(job core.Job) (string, error) {
 		return "", fmt.Errorf("creating temp dir: %w", err)
 	}
 
-	name := fmt.Sprintf("%s-%s.zip", filepath.Base(src), time.Now().Format("2006-01-02T15-04-05"))
+	name := filepath.Base(src) + ".zip"
 	zipPath := filepath.Join(tmpDir, name)
 
 	if err := writeZip(zipPath, src); err != nil {
