@@ -10,7 +10,7 @@ import (
 	"a-rc/internal/adapters/gdrive"
 	"a-rc/internal/adapters/tray"
 	adptyaml "a-rc/internal/adapters/yaml"
-	"a-rc/internal/core"
+	"a-rc/internal/app"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	upl := gdrive.New(configRepo, &cmd.ConfigPath)
 
 	// Core services.
-	archiveSvc := core.NewArchiveService(arc, upl)
+	archiveSvc := app.NewArchiveService(arc, upl)
 
 	// Tray adapter.
 	trayApp := tray.New(configRepo, &cmd.ConfigPath, jobScheduler, archiveSvc)

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"a-rc/internal/core"
+	"a-rc/internal/domain"
 )
 
 func TestArchive_CreatesZip(t *testing.T) {
@@ -16,7 +16,7 @@ func TestArchive_CreatesZip(t *testing.T) {
 	writeFile(t, src, filepath.Join("sub", "nested.txt"), "world")
 
 	a := New()
-	zipPath, err := a.Archive(core.Job{Path: src})
+	zipPath, err := a.Archive(domain.Job{Name: "mybackup", Path: src})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -27,13 +27,12 @@ func TestArchive_CreatesZip(t *testing.T) {
 		t.Fatalf("zip file not found: %v", err)
 	}
 
-	// zip name must be exactly {folder}.zip
-	base := filepath.Base(src)
-	wantName := base + ".zip"
-	if filepath.Base(zipPath) != wantName {
-		t.Errorf("zip name %q, want %q", filepath.Base(zipPath), wantName)
+	// zip name must be exactly {job.Name}.zip
+	if filepath.Base(zipPath) != "mybackup.zip" {
+		t.Errorf("zip name %q, want %q", filepath.Base(zipPath), "mybackup.zip")
 	}
 
+	base := filepath.Base(src)
 	entries := zipEntries(t, zipPath)
 	assertContains(t, entries, filepath.Join(base, "file.txt"))
 	assertContains(t, entries, filepath.Join(base, "sub", "nested.txt"))
@@ -41,7 +40,7 @@ func TestArchive_CreatesZip(t *testing.T) {
 
 func TestArchive_ErrorOnMissingSource(t *testing.T) {
 	a := New()
-	_, err := a.Archive(core.Job{Path: "/nonexistent/path"})
+	_, err := a.Archive(domain.Job{Path: "/nonexistent/path"})
 	if err == nil {
 		t.Fatal("expected error for missing source, got nil")
 	}
@@ -56,7 +55,7 @@ func TestArchive_ErrorOnFile(t *testing.T) {
 	defer os.Remove(f.Name())
 
 	a := New()
-	_, err = a.Archive(core.Job{Path: f.Name()})
+	_, err = a.Archive(domain.Job{Path: f.Name()})
 	if err == nil {
 		t.Fatal("expected error for non-directory source, got nil")
 	}

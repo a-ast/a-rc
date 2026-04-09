@@ -7,17 +7,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"a-rc/internal/core"
+	"a-rc/internal/domain"
 )
 
-// Archiver implements core.Archiver using zip.
+// Archiver implements domain.Archiver using zip.
 type Archiver struct{}
 
 func New() *Archiver { return &Archiver{} }
 
 // Archive creates a zip of `job.Path` in a temp directory and returns the zip file path.
 // The caller is responsible for removing the file after use.
-func (a *Archiver) Archive(job core.Job) (string, error) {
+func (a *Archiver) Archive(job domain.Job) (string, error) {
 	src := job.Path
 	info, err := os.Stat(src)
 	if err != nil {
@@ -32,7 +32,7 @@ func (a *Archiver) Archive(job core.Job) (string, error) {
 		return "", fmt.Errorf("creating temp dir: %w", err)
 	}
 
-	name := filepath.Base(src) + ".zip"
+	name := job.Name + ".zip"
 	zipPath := filepath.Join(tmpDir, name)
 
 	if err := writeZip(zipPath, src); err != nil {

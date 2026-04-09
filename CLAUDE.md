@@ -31,10 +31,11 @@ Hexagonal architecture: core has no external imports; adapters implement ports; 
 ```
 main.go                        # DI wiring only
 cmd/                           # Input adapter (cobra CLI)
-internal/core/
-  domain.go                    # Config, Job types
-  ports.go                     # Interfaces: ConfigRepository, Archiver, Uploader, JobScheduler
-  archive_service.go           # RunJob: archive + upload
+internal/domain/
+  domain.go                    # Config, GDriveConfig, Job — pure business types, no imports
+internal/app/
+  ports.go                     # Output port interfaces: ConfigRepository, Archiver, Uploader, JobScheduler
+  archive_service.go           # ArchiveService: RunJob use case (archive + upload + cleanup)
 internal/adapters/
   yaml/loader.go    → ConfigRepository
   cron/scheduler.go → JobScheduler    (robfig/cron)

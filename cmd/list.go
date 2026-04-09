@@ -20,9 +20,9 @@ func newListCmd() *cobra.Command {
 				fmt.Println("no jobs configured")
 				return nil
 			}
-			fmt.Printf("%-20s  %s\n", "SCHEDULE", "PATH")
+			fmt.Printf("%-30s  %-20s  %s\n", "NAME", "SCHEDULE", "PATH")
 			for _, j := range cfg.Jobs {
-				fmt.Printf("%-20s  %s\n", j.Schedule, j.Path)
+				fmt.Printf("%-30s  %-20s  %s\n", j.Name, j.Schedule, j.Path)
 			}
 			return nil
 		},

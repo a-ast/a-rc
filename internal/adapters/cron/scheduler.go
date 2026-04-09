@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"sync"
 
-	"a-rc/internal/core"
+	"a-rc/internal/domain"
 
 	robfigcron "github.com/robfig/cron/v3"
 )
 
-// Scheduler implements core.JobScheduler using robfig/cron.
+// Scheduler implements domain.JobScheduler using robfig/cron.
 type Scheduler struct {
 	mu   sync.Mutex
 	cron *robfigcron.Cron
@@ -19,7 +19,7 @@ func New() *Scheduler {
 	return &Scheduler{}
 }
 
-func (a *Scheduler) Start(jobs []core.Job, runner func(core.Job) error) error {
+func (a *Scheduler) Start(jobs []domain.Job, runner func(domain.Job) error) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 
@@ -46,7 +46,7 @@ func (a *Scheduler) Stop() {
 	}
 }
 
-func (a *Scheduler) Reload(jobs []core.Job, runner func(core.Job) error) error {
+func (a *Scheduler) Reload(jobs []domain.Job, runner func(domain.Job) error) error {
 	a.Stop()
 	return a.Start(jobs, runner)
 }

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"a-rc/internal/adapters/tray"
-	"a-rc/internal/core"
+	"a-rc/internal/app"
 	"github.com/spf13/cobra"
 )
 
@@ -15,8 +15,8 @@ var ConfigPath string
 
 // Services is the container passed from main to all subcommands.
 type Services struct {
-	Archive *core.ArchiveService
-	Config  core.ConfigRepository
+	Archive *app.ArchiveService
+	Config  app.ConfigRepository
 	Tray    *tray.TrayApp
 }
 

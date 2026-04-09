@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 
-	"a-rc/internal/core"
+	"a-rc/internal/app"
 
 	"github.com/getlantern/systray"
 )
@@ -14,13 +14,13 @@ var iconPNG []byte
 
 // TrayApp implements a macOS menu bar tray app.
 type TrayApp struct {
-	configRepo core.ConfigRepository
+	configRepo app.ConfigRepository
 	configPath *string
-	scheduler  core.JobScheduler
-	archiveSvc *core.ArchiveService
+	scheduler  app.JobScheduler
+	archiveSvc *app.ArchiveService
 }
 
-func New(configRepo core.ConfigRepository, configPath *string, scheduler core.JobScheduler, archiveSvc *core.ArchiveService) *TrayApp {
+func New(configRepo app.ConfigRepository, configPath *string, scheduler app.JobScheduler, archiveSvc *app.ArchiveService) *TrayApp {
 	return &TrayApp{
 		configRepo: configRepo,
 		configPath: configPath,
@@ -47,7 +47,7 @@ func (a *TrayApp) onReady() {
 		item.Disable()
 	} else {
 		for _, j := range cfg.Jobs {
-			item := systray.AddMenuItem(fmt.Sprintf("%s  %s", j.Schedule, j.Path), "")
+			item := systray.AddMenuItem(fmt.Sprintf("%s  %s  %s", j.Name, j.Schedule, j.Path), "")
 			item.Disable()
 		}
 		_ = a.scheduler.Start(cfg.Jobs, a.archiveSvc.RunJob)

@@ -1,4 +1,4 @@
-package core
+package domain
 
 // Config holds the full application configuration loaded from the config file.
 type Config struct {
@@ -16,6 +16,7 @@ type GDriveConfig struct {
 
 // Job describes a single archive task.
 type Job struct {
+	Name     string // set from the map key in config.yaml
 	Path     string `yaml:"path"`
 	Schedule string `yaml:"schedule"` // 5-field cron expression
 }
