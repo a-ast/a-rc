@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"a-rc/internal/domain"
+
 	goyaml "gopkg.in/yaml.v3"
 )
 
@@ -17,9 +18,9 @@ func New() *Loader { return &Loader{} }
 
 // rawConfig mirrors domain.Config but uses a map for jobs so names come from YAML keys.
 type rawConfig struct {
-	LogDir string              `yaml:"log_dir"`
-	GDrive domain.GDriveConfig `yaml:"gdrive"`
-	Jobs   map[string]rawJob   `yaml:"jobs"`
+	LogDir string                   `yaml:"log_dir"`
+	GDrive domain.GoogleDriveConfig `yaml:"gdrive"`
+	Jobs   map[string]rawJob        `yaml:"jobs"`
 }
 
 type rawJob struct {
@@ -32,7 +33,7 @@ func (l *Loader) Load(path string) (*domain.Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("opening config file: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var raw rawConfig
 	if err := goyaml.NewDecoder(f).Decode(&raw); err != nil {

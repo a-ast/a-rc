@@ -25,11 +25,15 @@ gdrive:
   folder: Backups
 
 jobs:
-  - path: ~/Documents
+  Documents:
+    path: ~/Documents
     schedule: "0 2 * * *"    # daily at 2am
-  - path: ~/Projects/a-rc
+  A-rc project:
+    path: ~/Projects/a-rc
     schedule: "0 */6 * * *"  # every 6 hours
 ```
+
+Each job key is the job name. It is also used as the archive filename (e.g. `Documents.zip`).
 
 `schedule` uses standard 5-field cron syntax (minute hour day month weekday).
 
@@ -49,7 +53,7 @@ jobs:
 On the first upload, a-rc opens a browser for authorization:
 
 ```bash
-a-rc run ~/some/path
+a-rc run "Some job"
 # Browser opens → click Allow → paste the authorization code into the terminal
 ```
 
@@ -57,7 +61,7 @@ a-rc exchanges the code for a token and saves it to `token_file`. Every subseque
 
 #### Upload
 
-Each archive is named `<folder>.zip` (e.g. `Documents.zip`).
+Each archive is named `<job name>.zip` (e.g. `Documents.zip`).
 If a file with the same name already exists in the Drive folder it is overwritten in place, no duplicates.
 
 ## Usage
@@ -66,8 +70,8 @@ If a file with the same name already exists in the Drive folder it is overwritte
 # Launch the menu bar tray app
 a-rc
 
-# Run a single job immediately
-a-rc run ~/Documents
+# Run a single job immediately (by name)
+a-rc run Documents
 
 # Show configured jobs
 a-rc list
@@ -81,6 +85,6 @@ a-rc --config /path/to/config.yaml
 
 ## How it works
 
-`a-rc` runs as a macOS menu bar app. The icon in the top-right bar shows a bow-and-arrow. Clicking it opens a menu listing each configured job (path + schedule) and a Quit item.
+`a-rc` runs as a macOS menu bar app. The icon in the top-right bar shows a bow-and-arrow. Clicking it opens a menu listing each configured job (name, schedule, path) and a Quit item.
 
 All job schedules are driven inside the app process by [robfig/cron](https://github.com/robfig/cron). When a job fires, a-rc zips the folder into a temporary directory, uploads the archive to the configured Drive folder (overwriting any previous version), then deletes the local copy.

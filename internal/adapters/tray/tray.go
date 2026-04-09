@@ -30,15 +30,15 @@ func New(configRepo app.ConfigRepository, configPath *string, scheduler app.JobS
 }
 
 // Run starts the tray app. Blocks until the user quits.
-func (a *TrayApp) Run() {
-	systray.Run(a.onReady, a.onExit)
+func (t *TrayApp) Run() {
+	systray.Run(t.onReady, t.onExit)
 }
 
-func (a *TrayApp) onReady() {
+func (t *TrayApp) onReady() {
 	systray.SetTemplateIcon(iconPNG, iconPNG)
 	systray.SetTooltip("a-rc archiver")
 
-	cfg, err := a.configRepo.Load(*a.configPath)
+	cfg, err := t.configRepo.Load(*t.configPath)
 	if err != nil {
 		item := systray.AddMenuItem(fmt.Sprintf("Error: %s", err), "")
 		item.Disable()
@@ -47,10 +47,13 @@ func (a *TrayApp) onReady() {
 		item.Disable()
 	} else {
 		for _, j := range cfg.Jobs {
-			item := systray.AddMenuItem(fmt.Sprintf("%s  %s  %s", j.Name, j.Schedule, j.Path), "")
+			item := systray.AddMenuItem(fmt.Sprintf("%s", j.Name), "")
 			item.Disable()
 		}
-		_ = a.scheduler.Start(cfg.Jobs, a.archiveSvc.RunJob)
+		if err := t.scheduler.Start(cfg.Jobs, t.archiveSvc.RunJob); err != nil {
+			item := systray.AddMenuItem(fmt.Sprintf("Scheduler error: %s", err), "")
+			item.Disable()
+		}
 	}
 
 	systray.AddSeparator()
@@ -62,6 +65,6 @@ func (a *TrayApp) onReady() {
 	}()
 }
 
-func (a *TrayApp) onExit() {
-	a.scheduler.Stop()
+func (t *TrayApp) onExit() {
+	t.scheduler.Stop()
 }

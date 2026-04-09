@@ -2,13 +2,13 @@ package domain
 
 // Config holds the full application configuration loaded from the config file.
 type Config struct {
-	LogDir string       `yaml:"log_dir"`
-	GDrive GDriveConfig `yaml:"gdrive"`
-	Jobs   []Job        `yaml:"jobs"`
+	LogDir string            `yaml:"log_dir"`
+	GDrive GoogleDriveConfig `yaml:"gdrive"`
+	Jobs   []Job             `yaml:"jobs"`
 }
 
-// GDriveConfig holds Google Drive settings.
-type GDriveConfig struct {
+// GoogleDriveConfig holds Google Drive settings.
+type GoogleDriveConfig struct {
 	CredentialsFile string `yaml:"credentials_file"` // OAuth2 client secret JSON from Google Console
 	TokenFile       string `yaml:"token_file"`       // cached OAuth2 token (written on first auth)
 	Folder          string `yaml:"folder"`

@@ -2,6 +2,7 @@ package cron
 
 import (
 	"fmt"
+	"log"
 	"sync"
 
 	"a-rc/internal/domain"
@@ -19,34 +20,36 @@ func New() *Scheduler {
 	return &Scheduler{}
 }
 
-func (a *Scheduler) Start(jobs []domain.Job, runner func(domain.Job) error) error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
+func (s *Scheduler) Start(jobs []domain.Job, runner func(domain.Job) error) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	c := robfigcron.New()
 	for _, job := range jobs {
 		j := job // capture loop variable
 		if _, err := c.AddFunc(j.Schedule, func() {
-			_ = runner(j) // errors are logged inside runner
+			if err := runner(j); err != nil {
+				log.Printf("job %q failed: %v", j.Name, err)
+			}
 		}); err != nil {
 			return fmt.Errorf("invalid schedule for path %q: %w", j.Path, err)
 		}
 	}
 	c.Start()
-	a.cron = c
+	s.cron = c
 	return nil
 }
 
-func (a *Scheduler) Stop() {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if a.cron != nil {
-		a.cron.Stop()
-		a.cron = nil
+func (s *Scheduler) Stop() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.cron != nil {
+		s.cron.Stop()
+		s.cron = nil
 	}
 }
 
-func (a *Scheduler) Reload(jobs []domain.Job, runner func(domain.Job) error) error {
-	a.Stop()
-	return a.Start(jobs, runner)
+func (s *Scheduler) Reload(jobs []domain.Job, runner func(domain.Job) error) error {
+	s.Stop()
+	return s.Start(jobs, runner)
 }

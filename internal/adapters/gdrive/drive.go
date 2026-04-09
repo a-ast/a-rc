@@ -27,8 +27,8 @@ func New(repo app.ConfigRepository, configPath *string) *Drive {
 	return &Drive{configRepo: repo, configPath: configPath}
 }
 
-func (a *Drive) Upload(localPath string) error {
-	cfg, err := a.configRepo.Load(*a.configPath)
+func (d *Drive) Upload(localPath string) error {
+	cfg, err := d.configRepo.Load(*d.configPath)
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
 	}
@@ -111,7 +111,7 @@ func loadToken(path string) (*oauth2.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	var tok oauth2.Token
 	return &tok, json.NewDecoder(f).Decode(&tok)
 }
@@ -124,8 +124,11 @@ func saveToken(path string, tok *oauth2.Token) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	return json.NewEncoder(f).Encode(tok)
+	if err := json.NewEncoder(f).Encode(tok); err != nil {
+		_ = f.Close()
+		return err
+	}
+	return f.Close()
 }
 
 // findFolder searches for a folder by name in all drives visible to the user.
@@ -153,7 +156,7 @@ func uploadFile(svc *drive.Service, localPath, folderID string) error {
 	if err != nil {
 		return fmt.Errorf("opening file: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	name := filepath.Base(localPath)
 
