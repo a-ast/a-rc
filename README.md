@@ -84,7 +84,3 @@ a-rc --config /path/to/config.yaml
 `a-rc` runs as a macOS menu bar app. The icon in the top-right bar shows a bow-and-arrow. Clicking it opens a menu listing each configured job (path + schedule) and a Quit item.
 
 All job schedules are driven inside the app process by [robfig/cron](https://github.com/robfig/cron). When a job fires, a-rc zips the folder into a temporary directory, uploads the archive to the configured Drive folder (overwriting any previous version), then deletes the local copy.
-
-## Notes
-
-- The menu bar icon is a template image — macOS automatically inverts it for dark mode.
