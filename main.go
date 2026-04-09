@@ -31,6 +31,7 @@ func main() {
 		Archive: archiveSvc,
 		Config:  configRepo,
 		Tray:    trayApp,
+		GDrive:  upl,
 	})
 
 	if err := root.Execute(); err != nil {

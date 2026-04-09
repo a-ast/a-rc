@@ -4,8 +4,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"a-rc/internal/adapters/gdrive"
 	"a-rc/internal/adapters/tray"
 	"a-rc/internal/app"
+
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +20,7 @@ type Services struct {
 	Archive *app.ArchiveService
 	Config  app.ConfigRepository
 	Tray    *tray.TrayApp
+	GDrive  *gdrive.Drive
 }
 
 var svc *Services
@@ -41,6 +44,7 @@ func NewRootCmd(services *Services) *cobra.Command {
 	root.AddCommand(
 		newRunCmd(),
 		newListCmd(),
+		newAuthorizeGDriveCmd(),
 	)
 	return root
 }

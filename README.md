@@ -46,14 +46,14 @@ Each job key is the job name. It is also used as the archive filename (e.g. `Doc
 3. Create credentials: APIs & Services - Credentials - Create Credentials - **OAuth client ID** - Application type: **Desktop app**. Download the JSON and save it as `credentials_file`.
 4. Configure the consent screen: OAuth consent screen - External - add your Google account as a test user.
 
-#### Authorization (first run)
+#### Authorization (required once before first use)
 
-`token_file` is created automatically — you do not need to obtain it manually.
+`token_file` is created automatically by running the `authorize-gdrive` command.
 
-On the first upload, a-rc opens a browser for authorization:
+**This must be done from the terminal before launching the tray app.** The tray app has no terminal, so it cannot prompt for the authorization code.
 
 ```bash
-a-rc run "Some job"
+a-rc authorize-gdrive
 # Browser opens → click Allow → paste the authorization code into the terminal
 ```
 
@@ -67,6 +67,9 @@ If a file with the same name already exists in the Drive folder it is overwritte
 ## Usage
 
 ```bash
+# Authorize Google Drive access (required once before first use)
+a-rc authorize-gdrive
+
 # Launch the menu bar tray app
 a-rc
 

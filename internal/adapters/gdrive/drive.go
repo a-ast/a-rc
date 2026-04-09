@@ -56,6 +56,36 @@ func (d *Drive) Upload(localPath string) error {
 	return uploadFile(svc, localPath, folderID)
 }
 
+// Authorize runs the OAuth2 browser flow and saves the token to token_file.
+// Call this once from the terminal before launching the tray app.
+func (d *Drive) Authorize() error {
+	cfg, err := d.configRepo.Load(*d.configPath)
+	if err != nil {
+		return fmt.Errorf("loading config: %w", err)
+	}
+	g := cfg.GDrive
+	if g.CredentialsFile == "" {
+		return fmt.Errorf("gdrive.credentials_file is not set in config")
+	}
+	if g.TokenFile == "" {
+		return fmt.Errorf("gdrive.token_file is not set in config")
+	}
+
+	data, err := os.ReadFile(g.CredentialsFile)
+	if err != nil {
+		return fmt.Errorf("reading credentials file: %w", err)
+	}
+	oauthCfg, err := google.ConfigFromJSON(data, drive.DriveScope)
+	if err != nil {
+		return fmt.Errorf("parsing credentials: %w", err)
+	}
+
+	if _, err := authorizeInteractive(oauthCfg, g.TokenFile); err != nil {
+		return err
+	}
+	return nil
+}
+
 func newDriveService(credFile, tokenFile string) (*drive.Service, error) {
 	data, err := os.ReadFile(credFile)
 	if err != nil {
