@@ -42,41 +42,38 @@ func (a *Archiver) Archive(job domain.Job) (string, error) {
 	return zipPath, nil
 }
 
-func writeZip(zipPath, src string) error {
+func writeZip(zipPath, src string) (err error) {
 	f, err := os.Create(zipPath)
 	if err != nil {
 		return fmt.Errorf("creating zip file: %w", err)
 	}
-	defer f.Close()
-
 	w := zip.NewWriter(f)
-	defer w.Close()
+	defer func() {
+		if cerr := w.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("finalizing zip: %w", cerr)
+		}
+		_ = f.Close()
+	}()
 
 	// base is the parent of src so paths inside the zip are relative to src's parent,
 	// preserving the top-level folder name.
 	base := filepath.Dir(src)
-
 	return filepath.WalkDir(src, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-
 		rel, err := filepath.Rel(base, path)
 		if err != nil {
 			return err
 		}
-
 		if d.IsDir() {
-			// Add directory entry (trailing slash required by zip spec).
 			_, err = w.Create(rel + "/")
 			return err
 		}
-
 		info, err := d.Info()
 		if err != nil {
 			return err
 		}
-
 		header, err := zip.FileInfoHeader(info)
 		if err != nil {
 			return err
@@ -88,12 +85,11 @@ func writeZip(zipPath, src string) error {
 		if err != nil {
 			return err
 		}
-
 		file, err := os.Open(path)
 		if err != nil {
 			return err
 		}
-		defer file.Close()
+		defer func() { _ = file.Close() }()
 
 		_, err = io.Copy(fw, file)
 		return err
