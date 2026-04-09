@@ -8,6 +8,7 @@ import (
 
 	"a-rc/internal/domain"
 
+	robfigcron "github.com/robfig/cron/v3"
 	goyaml "gopkg.in/yaml.v3"
 )
 
@@ -49,7 +50,32 @@ func (l *Loader) Load(path string) (*domain.Config, error) {
 	}
 
 	expandTilde(cfg)
+	if err := validate(cfg); err != nil {
+		return nil, err
+	}
 	return cfg, nil
+}
+
+func validate(cfg *domain.Config) error {
+	parser := robfigcron.NewParser(robfigcron.Minute | robfigcron.Hour | robfigcron.Dom | robfigcron.Month | robfigcron.Dow)
+	for _, j := range cfg.Jobs {
+		if j.Name == "" {
+			return fmt.Errorf("job is missing a name")
+		}
+		if j.Path == "" {
+			return fmt.Errorf("job %q: path is required", j.Name)
+		}
+		if j.Schedule == "" {
+			return fmt.Errorf("job %q: schedule is required", j.Name)
+		}
+		if _, err := os.Stat(j.Path); err != nil {
+			return fmt.Errorf("job %q: path %q does not exist", j.Name, j.Path)
+		}
+		if _, err := parser.Parse(j.Schedule); err != nil {
+			return fmt.Errorf("job %q: invalid schedule %q: %w", j.Name, j.Schedule, err)
+		}
+	}
+	return nil
 }
 
 // expandTilde replaces leading ~ in all path fields with the user's home directory.
