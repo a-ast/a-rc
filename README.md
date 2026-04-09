@@ -1,11 +1,13 @@
 # A-rc
 
-A macOS CLI archiver. Archives configured folders on a cron schedule and uploads them to Google Drive. Runs as a persistent background daemon managed by launchd.
+A macOS CLI archiver. 
+It archives configured folders on a cron schedule and uploads them to Google Drive. 
+Runs as a persistent background daemon managed by launchd.
 
 ## Install
 
 ```bash
-git clone <repo>
+git clone https://github.com/a-ast/a-rc
 cd a-rc
 go build -o a-rc
 mv a-rc /usr/local/bin/a-rc
@@ -26,7 +28,7 @@ gdrive:
 jobs:
   - path: ~/Documents
     schedule: "0 2 * * *"    # daily at 2am
-  - path: ~/Projects
+  - path: ~/Projects/a-arc
     schedule: "0 */6 * * *"  # every 6 hours
 ```
 
@@ -54,9 +56,10 @@ a-rc run ~/some/path
 
 a-rc exchanges the code for a token and saves it to `token_file`. Every subsequent run uses that file silently and refreshes it automatically when it expires.
 
-#### Upload behaviour
+#### Upload
 
-Each archive is named `<folder>.zip` (e.g. `Documents.zip`). If a file with the same name already exists in the Drive folder it is overwritten in place — no duplicates accumulate.
+Each archive is named `<folder>.zip` (e.g. `Documents.zip`). 
+If a file with the same name already exists in the Drive folder it is overwritten in place, no duplicates.
 
 ## Usage
 
