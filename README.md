@@ -1,8 +1,7 @@
 # A-rc
 
-A macOS CLI archiver. 
-It archives configured folders on a cron schedule and uploads them to Google Drive. 
-Runs as a persistent background daemon managed by launchd.
+A macOS archiver that lives in the menu bar.
+It archives configured folders on a cron schedule and uploads them to Google Drive.
 
 ## Install
 
@@ -28,7 +27,7 @@ gdrive:
 jobs:
   - path: ~/Documents
     schedule: "0 2 * * *"    # daily at 2am
-  - path: ~/Projects/a-arc
+  - path: ~/Projects/a-rc
     schedule: "0 */6 * * *"  # every 6 hours
 ```
 
@@ -58,47 +57,34 @@ a-rc exchanges the code for a token and saves it to `token_file`. Every subseque
 
 #### Upload
 
-Each archive is named `<folder>.zip` (e.g. `Documents.zip`). 
+Each archive is named `<folder>.zip` (e.g. `Documents.zip`).
 If a file with the same name already exists in the Drive folder it is overwritten in place, no duplicates.
 
 ## Usage
 
 ```bash
-# Register the daemon with launchd and start it
-a-rc schedule
-
-# After editing config.yaml, reload the daemon
-a-rc schedule
-
-# Show configured jobs and daemon status
-a-rc list
+# Launch the menu bar tray app
+a-rc
 
 # Run a single job immediately
 a-rc run ~/Documents
 
-# Stop and remove the daemon
-a-rc unschedule
+# Show configured jobs
+a-rc list
 ```
 
 Use `--config` to point at a non-default config file:
 
 ```bash
-a-rc --config /path/to/config.yaml schedule
+a-rc --config /path/to/config.yaml
 ```
 
 ## How it works
 
-`a-rc schedule` installs a single launchd `LaunchAgent` (`com.a-rc.daemon`) that keeps the daemon process alive with `KeepAlive=true`. All job schedules are driven inside the daemon by [robfig/cron](https://github.com/robfig/cron) — no per-job plists.
+`a-rc` runs as a macOS menu bar app. The icon in the top-right bar shows a bow-and-arrow. Clicking it opens a menu listing each configured job (path + schedule) and a Quit item.
 
-Re-running `a-rc schedule` on a running daemon sends `SIGHUP` to reload the config without restarting. `SIGTERM` triggers a clean stop.
-
-Archives are written to a temporary directory, uploaded to the configured Drive folder (overwriting any previous version), then deleted locally.
-
-Logs are written to `log_dir`:
-
-- `a-rc.log` - stdout
-- `a-rc.err` - stderr
+All job schedules are driven inside the app process by [robfig/cron](https://github.com/robfig/cron). When a job fires, a-rc zips the folder into a temporary directory, uploads the archive to the configured Drive folder (overwriting any previous version), then deletes the local copy.
 
 ## Notes
 
-- The plist hardcodes the binary path at `a-rc schedule` time. If you move or rebuild the binary to a different location, re-run `a-rc schedule`.
+- The menu bar icon is a template image — macOS automatically inverts it for dark mode.
