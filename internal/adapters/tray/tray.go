@@ -46,8 +46,9 @@ func (t *TrayApp) onReady() {
 		item := systray.AddMenuItem("No jobs configured", "")
 		item.Disable()
 	} else {
+		backedUp := systray.AddMenuItem("Backed-up folders", "")
 		for _, j := range cfg.Jobs {
-			item := systray.AddMenuItem(fmt.Sprintf("%s", j.Name), "")
+			item := backedUp.AddSubMenuItem(j.Name, "")
 			item.Disable()
 		}
 		if err := t.scheduler.Start(cfg.Jobs, t.archiveSvc.RunJob); err != nil {
